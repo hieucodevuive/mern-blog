@@ -7,3 +7,9 @@ export const authValidate = Joi.object({
   password: Joi.string().required()
 })
 
+export const signinValidate = Joi.object({
+  email: Joi.string().required()
+    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] }}),
+  password: Joi.string().required()
+})
+

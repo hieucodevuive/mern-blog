@@ -10,3 +10,12 @@ export const createNewUser = async(data) => {
     console.log(error.message);
   }
 }
+
+export const findOneByEmail = async(email) => {
+  try {
+    const user = User.findOne({ email })
+    return user
+  } catch (error) {
+    next(error)
+  }
+}
