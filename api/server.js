@@ -5,6 +5,7 @@ import userRoutes from './routes/user.route.js'
 import authRoutes from './routes/auth.route.js'
 import { middlewareErrorHandle } from './middleware/middlewareErrorHanlde.js'
 
+
 dotenv.config()
 //connect db
 mongoose.connect(process.env.MONGO)
@@ -18,6 +19,19 @@ mongoose.connect(process.env.MONGO)
 //App
 
 const app = express();
+
+//cors
+app.use((req, res, next) => {
+  const corsWhitelist = [
+      'http://localhost:5173',
+  ];
+  if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
+      res.header('Access-Control-Allow-Origin', req.headers.origin);
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  }
+  next();
+});
+
 app.use(express.json())
 
 app.listen(3000, () => {

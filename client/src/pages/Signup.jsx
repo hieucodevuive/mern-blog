@@ -1,7 +1,36 @@
 import { Link } from 'react-router-dom'
-import { Button } from 'flowbite-react'
+import { Button, Spinner } from 'flowbite-react'
+import { useState } from 'react'
+import { signupAPI } from '../../api/auth.api'
+import { toast } from 'react-toastify'
 
 export default function Signup() {
+  const [formData, setFormData] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSignup = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() })
+  }
+  const handleSubmit = async(e) => {
+    e.preventDefault()
+    try {
+      setIsLoading(true)
+      const { confirm_password, ...signupData } = formData
+      //Kiem tra xem comfirm password co bang password ko
+      if (signupData.password !== confirm_password) {
+        toast.error('Confirm password is not correct!')
+        return
+      }
+      //Goi api
+      const result = await signupAPI(signupData)
+      toast.success('Sigh Up Successfully')
+      setIsLoading(false)
+      return result
+    } catch (error) {
+      toast.error(`${error.response.data.message}`)
+      setIsLoading(false)
+    }
+  }
   return (
     <div className='min-h-screen mt-20'>
       <div className='flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center'>
@@ -22,22 +51,22 @@ export default function Signup() {
 
         {/* Right */}
         <div className='mt-20 md:w-96'>
-          <form className='w-50'>
+          <form className='w-50' onSubmit={handleSubmit}>
             <div className='mb-6'>
               <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>User name</label>
-              <input type='text' id='username' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='User Name...' required />
+              <input onChange={handleSignup} type='text' id='username' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='User Name...' required />
             </div>
             <div className='mb-6'>
               <label htmlFor='email' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Email address</label>
-              <input type='email' id='email' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Email...' required />
+              <input onChange={handleSignup} type='email' id='email' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='Email...' required />
             </div>
             <div className='mb-6'>
               <label htmlFor='password' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Password</label>
-              <input type='password' id='password' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='•••••••••' required />
+              <input onChange={handleSignup} type='password' id='password' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='•••••••••' required />
             </div>
             <div className='mb-6'>
               <label htmlFor='confirm_password' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Confirm password</label>
-              <input type='password' id='confirm_password' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='•••••••••' required />
+              <input onChange={handleSignup} type='password' id='confirm_password' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' placeholder='•••••••••' required />
             </div>
             <div className='flex items-start mb-6'>
               <div className='flex items-center h-5'>
@@ -45,7 +74,13 @@ export default function Signup() {
               </div>
               <label htmlFor='remember' className='ms-2 text-sm font-medium text-gray-900 dark:text-gray-300'>I agree with the <a href='#' className='text-blue-600 hover:underline dark:text-blue-500'>terms and conditions</a>.</label>
             </div>
-            <Button type='submit' gradientDuoTone='purpleToPink' >Sign Up</Button>
+            <Button className='md:w-96 ' type='submit' disabled={isLoading} gradientDuoTone='purpleToPink' >
+              {
+                isLoading ?
+                  <Spinner />:
+                  'Sign Up'
+              }
+            </Button>
           </form>
           <div className='flex gap-2 mt-5'>
             <span>Have an account?</span>
