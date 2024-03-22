@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button, Spinner } from 'flowbite-react'
 import { useState } from 'react'
 import { signupAPI } from '../../api/auth.api'
@@ -7,6 +7,7 @@ import { toast } from 'react-toastify'
 export default function Signup() {
   const [formData, setFormData] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const handleSignup = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() })
@@ -23,9 +24,14 @@ export default function Signup() {
       }
       //Goi api
       const result = await signupAPI(signupData)
-      toast.success('Sigh Up Successfully')
-      setIsLoading(false)
-      return result
+      if (result) {
+        toast.success('Sigh Up Successfully')
+        setIsLoading(false)
+        navigate('/signin')
+        return result
+      }
+      toast.error('Something went wrong!')
+      return 
     } catch (error) {
       toast.error(`${error.response.data.message}`)
       setIsLoading(false)
