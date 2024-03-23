@@ -29,7 +29,6 @@ export const signup = async(req, res, next) => {
 
 export const signin = async(req, res, next) => {
   const validateData = await signinValidate.validateAsync(req.body)
-  console.log(validateData);
   if (!validateData) {
     return next(errorHandler(400,'All fields are required'))
     
@@ -50,7 +49,8 @@ export const signin = async(req, res, next) => {
       {id: validUser._id}, process.env.JWT_SECRET
     )
 
-    const { password: pass, ...rest } = validUser._doc 
+    const { password: pass, ...rest } = validUser._doc
+
     res.status(200).cookie('access_token', token, {
       httpOnly: true
     }).json(rest)

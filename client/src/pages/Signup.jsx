@@ -14,6 +14,10 @@ export default function Signup() {
   }
   const handleSubmit = async(e) => {
     e.preventDefault()
+    if (!/\.com$|\.net$/.test(formData.email)) {
+      toast.error('Please enter a valid email address')
+      return
+    }
     try {
       setIsLoading(true)
       const { confirm_password, ...signupData } = formData
@@ -31,7 +35,7 @@ export default function Signup() {
         return result
       }
       toast.error('Something went wrong!')
-      return 
+      return
     } catch (error) {
       toast.error(`${error.response.data.message}`)
       setIsLoading(false)
@@ -51,7 +55,7 @@ export default function Signup() {
           Blog
           </Link>
           <p className='text-sm mt-5 mr-5'>
-            This is HieuPham&#39;s Blog. You can sign ip with your email and password or with Goole
+            This is HieuPham&#39;s Blog. You can Sign Up with your email and password or with Goole
           </p>
         </div>
 

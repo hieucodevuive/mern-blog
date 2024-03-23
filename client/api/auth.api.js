@@ -5,3 +5,8 @@ export const signupAPI = async(data) => {
   const response = await axios.post(`${API_ROOT}/api/auth/signup`, data)
   return response.data
 }
+
+export const signinAPI = async(data) => {
+  const response = await axios.post(`${API_ROOT}/api/auth/signin`, data)
+  return response.data
+}
