@@ -13,7 +13,7 @@ export default function Signin() {
   const navigate = useNavigate()
 
   const dispatch = useDispatch()
-  const { isLoading, error: errorMessage, currentUser } = useSelector((state) => state.user)
+  const { isLoading, error: errorMessage } = useSelector((state) => state.user)
 
   const handleSignin = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() })
