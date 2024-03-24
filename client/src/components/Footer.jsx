@@ -60,16 +60,16 @@ export default function FooterCom() {
         <div className='text-center p-2'>
           <div>©2024 HieuPhamDev</div>
           <ul className='flex justify-center gap-3 items-center pt-5'>
-            <li className='hp-icon'><a
+            <li className='hp-icon text-pink-400 hover:text-pink-600'><a
               href='https://www.facebook.com/profile.php?id=100015532698727'
               target='_blank'
               rel='noreferrer'><FaFacebook /></a></li>
-            <li className='hp-icon'><a
+            <li className='hp-icon text-pink-400 hover:text-pink-600'><a
               href='https://github.com/hieucodevuive'
               target='_blank'
               rel='noreferrer'><FaGithub /></a></li>
-            <li className='hp-icon'><a href=''><FaInstagram /></a></li>
-            <li className='hp-icon'><a href=''><FaLinkedin /></a></li>
+            <li className='hp-icon text-pink-400 hover:text-pink-600'><a href=''><FaInstagram /></a></li>
+            <li className='hp-icon text-pink-400 hover:text-pink-600'><a href=''><FaLinkedin /></a></li>
           </ul>
         </div>
       </div>

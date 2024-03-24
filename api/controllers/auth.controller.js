@@ -3,7 +3,7 @@ import { createNewUser, findOneByEmail } from "../services/auth.services.js"
 import bcryptjs from 'bcryptjs'
 import { errorHandler } from "../utils/error.js"
 import jwt from "jsonwebtoken"
-
+import User from "../models/user.model.js"
 
 export const signup = async(req, res, next) => {
   try {
@@ -59,4 +59,40 @@ export const signin = async(req, res, next) => {
     next(error)
   }
   
+}
+
+export const google = async(req, res, next) => {
+  const {email, username, googlePhotoUrl} = req.body
+  console.log(req.body);
+  try {
+    const user = await User.findOne({email})
+    if(user) {
+      const token = jwt.sign(
+        {id: user._id}, process.env.JWT_SECRET
+        )
+      const { password: pass, ...rest } = user._doc
+      res.status(200).cookie('access_token', token, {
+        httpOnly: true
+      }).json(rest)
+    } else {
+      const generatedPassword = Math.random().toString(36).slice(-8)
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10)
+      const newUser = new User({
+        username: username.toLowerCase().split(' ').join('') + Math.random().toString(9).slice(-4),
+        email,
+        password: hashedPassword,
+        profilePicture: googlePhotoUrl
+      })
+      await newUser.save()
+      const token = jwt.sign(
+        {id: newUser._id}, process.env.JWT_SECRET
+        )
+      const { password: pass, ...rest } = newUser._doc
+      res.status(200).cookie('access_token', token, {
+        httpOnly: true
+      }).json(rest)
+    }
+  } catch (error) {
+    next(error)
+  }
 }

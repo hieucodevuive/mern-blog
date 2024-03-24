@@ -3,6 +3,7 @@ import { Button, Spinner } from 'flowbite-react'
 import { useState } from 'react'
 import { signupAPI } from '../../api/auth.api'
 import { toast } from 'react-toastify'
+import OAuth from '../components/OAuth'
 
 export default function Signup() {
   const [formData, setFormData] = useState({})
@@ -91,6 +92,7 @@ export default function Signup() {
                   'Sign Up'
               }
             </Button>
+            <OAuth />
           </form>
           <div className='flex gap-2 mt-5'>
             <span>Have an account?</span>

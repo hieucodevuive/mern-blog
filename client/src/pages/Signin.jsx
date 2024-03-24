@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { signinStart, signinSuccess, signinFailure } from '../redux/user/userSlice'
+import OAuth from '../components/OAuth'
 
 export default function Signin() {
   const [formData, setFormData] = useState({})
@@ -83,13 +84,14 @@ export default function Signin() {
               </div>
               <label htmlFor='remember' className='ms-2 text-sm font-medium text-gray-900 dark:text-gray-300'>I agree with the <a href='#' className='text-blue-600 hover:underline dark:text-blue-500'>terms and conditions</a>.</label>
             </div>
-            <Button className='md:w-96 ' type='submit' disabled={isLoading} gradientDuoTone='purpleToPink' >
+            <Button className='md:w-96' type='submit' disabled={isLoading} gradientDuoTone='purpleToPink' >
               {
                 isLoading ?
                   <Spinner />:
                   'Sign In'
               }
             </Button>
+            <OAuth />
           </form>
           <div className='flex gap-2 mt-5'>
             <span>Don&#39;t have an account?</span>
