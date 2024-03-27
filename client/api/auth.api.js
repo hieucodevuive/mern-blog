@@ -15,3 +15,8 @@ export const signinWithGoogleAPI = async(data) => {
   const response = await axios.post(`${API_ROOT}/api/auth/google`, data)
   return response.data
 }
+
+export const updateUserAPI = async(userId, data) => {
+  const response = await axios.put(`${API_ROOT}/api/user/update/${userId}`, data)
+  return response.data
+}

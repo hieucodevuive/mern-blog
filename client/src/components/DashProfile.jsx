@@ -1,6 +1,7 @@
 import { Button, TextInput } from 'flowbite-react'
 import { useState, useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { isEmpty } from 'lodash'
 import {
   getStorage,
   ref,
@@ -12,16 +13,27 @@ import { toast } from 'react-toastify'
 import { CircularProgressbar } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 
+import { updateStart, updateSuccess, updateFailure } from '../redux/user/userSlice'
+import { useDispatch } from 'react-redux'
+
+import { updateUserAPI } from '../../api/auth.api'
+import { Spinner } from 'flowbite-react'
+
+
+
 export default function DashProfile() {
   const { currentUser } = useSelector(state => state.user)
   const [imageFile, setImageFile] = useState(null)
   const [imageFileUrl, setImageFileUrl] = useState(null)
   const [imageFileUploading, setImageFileUploading] = useState(null)
   const filePickerRef = useRef()
+  const dispatch = useDispatch()
+  const [formData, setFormData] = useState({})
+  const { loading: isLoading, error: errorMessage } = useSelector((state) => state.user)
 
   const handleImageChange = (e) => {
     const file = e.target.files[0]
-    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif']; // Thêm các loại MIME hình ảnh khác nếu cần
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif']// Thêm các loại MIME hình ảnh khác nếu cần
     if (file && validImageTypes.includes(file.type)) {
       setImageFile(file)
       setImageFileUrl(URL.createObjectURL(file))
@@ -48,43 +60,70 @@ export default function DashProfile() {
     //     }
     //   }
     // }
-    const storage = getStorage(app)
-    const fileName = new Date().getTime() + imageFile.name
-    const storageRef = ref(storage, fileName)
+    const storage = await getStorage(app)
+    const fileName = await new Date().getTime() + imageFile.name
+    const storageRef = await ref(storage, fileName)
     const uploadTask = uploadBytesResumable(storageRef, imageFile)
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        setImageFileUploading(progress.toFixed(0))
-      },
-      (error) => {
-        toast.error('Couldn not upload image!')
-        // eslint-disable-next-line no-console
-        console.log(error)
-        setImageFileUploading(null)
-        setImageFile(null)
-        setImageFileUrl(null)
-      },
-      () => {
-        getDownloadURL(uploadTask.spanshot.ref).then((downloadURL) => {
-          setImageFileUrl(downloadURL)
-        })
+
+    await new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          setImageFileUploading(progress.toFixed(0))
+        },
+        (error) => {
+          toast.error('Couldn not upload image!')
+          // eslint-disable-next-line no-console
+          console.log(error)
+          setImageFileUploading(null)
+          setImageFile(null)
+          setImageFileUrl(null)
+          reject(error)
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImageFileUrl(downloadURL)
+            setFormData({ ...formData, profilePicture: downloadURL })
+            resolve()
+          })
+        }
+      )
+    })
+  }
+
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+  }
+
+  const handleSubmit = async(e) => {
+    e.preventDefault()
+    if (isEmpty(formData)) { return }
+    try {
+      dispatch(updateStart())
+      const updateUser = await updateUserAPI(currentUser._id, formData)
+      if (updateUser) {
+        dispatch(updateSuccess(updateUser))
+        toast.success('Updated successfully')
       }
-    )
+    } catch (error) {
+      dispatch(updateFailure(`${error.response.data.message}`))
+      toast.error(errorMessage)
+    }
   }
 
   return (
     <div className='max-w-lg mx-auto p-3 w-full'>
       <h1 className='my-7 text-center font-semibold text-3xl'>Profile</h1>
-      <form className='flex flex-col gap-4'>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input type='file' accept='image/*' onChange={handleImageChange} ref={filePickerRef} hidden />
         <div className='relative w-32 h-32 self-center cursor-pointer shadow-md rounded-full'
           onClick={() => filePickerRef.current.click()}
         >
           {imageFileUploading && (
-            <CircularProgressbar value={imageFileUploading || 0} 
+            <CircularProgressbar value={imageFileUploading || 0}
               text={`${imageFileUploading}%`}
               strokeWidth={5}
               styles={{
@@ -108,14 +147,18 @@ export default function DashProfile() {
           />
         </div>
         <TextInput type='text' id='username' placeholder='User Name'
-          defaultValue={currentUser.username}
+          defaultValue={currentUser.username} onChange={handleChange}
         />
-        <TextInput type='email' id='email' placeholder='Email'
-          defaultValue={currentUser.email}
+        <TextInput disabled type='email' id='email' placeholder='Email'
+          defaultValue={currentUser.email} onChange={handleChange}
         />
-        <TextInput type='password' id='password' placeholder='******'/>
+        <TextInput disabled type='password' id='password' placeholder='******' onChange={handleChange}/>
         <Button type='submit' gradientDuoTone='purpleToBlue'>
-          Update
+          {
+            isLoading ?
+              <Spinner />:
+              'Update'
+          }
         </Button>
       </form>
       <div className='text-red-500 flex justify-between mt-5'>

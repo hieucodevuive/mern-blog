@@ -20,20 +20,23 @@ mongoose.connect(process.env.MONGO)
 
 const app = express();
 
-//cookie
-app.use(cookieParser())
-
 //cors
 app.use((req, res, next) => {
   const corsWhitelist = [
       'http://localhost:5173',
   ];
   if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
-      res.header('Access-Control-Allow-Origin', req.headers.origin);
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+      res.header('Access-Control-Allow-Origin', req.headers.origin)
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+      res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS')
   }
   next();
 });
+
+//cookie
+app.use(cookieParser())
+
+
 
 app.use(express.json())
 

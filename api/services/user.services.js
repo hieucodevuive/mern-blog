@@ -6,7 +6,7 @@ export const updateUserById = async (userId, user) => {
       $set: {
         username: user.username,
         email: user.email,
-        profilePictur: user.profilePicture,
+        profilePicture: user.profilePicture,
         password: user.password
       },
     }, { new: true })
