@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import userRoutes from './routes/user.route.js'
 import authRoutes from './routes/auth.route.js'
 import { middlewareErrorHandle } from './middleware/middlewareErrorHanlde.js'
-
+import cookieParser from 'cookie-parser'
 
 dotenv.config()
 //connect db
@@ -19,6 +19,9 @@ mongoose.connect(process.env.MONGO)
 //App
 
 const app = express();
+
+//cookie
+app.use(cookieParser())
 
 //cors
 app.use((req, res, next) => {
