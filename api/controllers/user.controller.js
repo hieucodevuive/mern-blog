@@ -1,5 +1,6 @@
 import { errorHandler } from '../utils/error.js'
 import bcryptjs from 'bcryptjs'
+import User from '../models/user.model.js'
 import { updateUserById } from '../services/user.services.js'
 
 export const userTest = (req, res) => {
@@ -35,6 +36,20 @@ export const updateUser = async(req, res, next) => {
     const updateUser = await updateUserById(req.params.userId, req.body)
     const { password, ...rest } = updateUser._doc
     return res.status(200).json(rest)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const deleteUser = async (req, res, next) => {  
+  try {
+    if(req.params.userId) {
+      console.log(req.params.userId)
+      const result = await User.findByIdAndDelete(req.params.userId)
+      if (result) return res.status(200).json('Deleted user successfully')
+      else return next(errorHandler(400, 'Delete user failed'))
+    }
+    next(errorHandler(400, 'User not found'))
   } catch (error) {
     next(error)
   }
