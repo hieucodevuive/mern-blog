@@ -20,3 +20,14 @@ export const updateUserAPI = async(userId, data) => {
   const response = await axios.put(`${API_ROOT}/api/user/update/${userId}`, data)
   return response.data
 }
+
+export const deleteUserAPI = async(userId) => {
+  const response = await axios.delete(`${API_ROOT}/api/user/delete/${userId}`)
+  return response.data
+}
+
+export const signoutAPI = async() => {
+  const response = await axios.post(`${API_ROOT}/api/user/signout`)
+  return response.data
+}
+
